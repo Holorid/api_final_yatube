@@ -2,11 +2,6 @@ from rest_framework.serializers import ModelSerializer, SlugRelatedField
 from rest_framework.serializers import UniqueTogetherValidator, ValidationError
 from rest_framework.serializers import CurrentUserDefault
 from rest_framework.relations import SlugRelatedField
-# Хотел спросить по поводу импортов.
-# Есть ли разница в импорте from rest_framework import serializers
-# и импорте from rest_framework.serializers import CurrentUserDefault?
-# Тип испортировать весь serializers или делать импорт именно
-# класс из serializers
 
 from posts.models import Comment, Post, Group, Follow, User
 
@@ -59,9 +54,9 @@ class FollowSerializer(ModelSerializer):
             )
         ]
 
-    def validate(self, data):
-        if data['user'] == data['following']:
+    def validate_following(self, following):
+        if self.context['request'].user == following:
             raise ValidationError(
                 'На себя подписаться нельзя'
             )
-        return data
+        return following
